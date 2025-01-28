@@ -5,9 +5,11 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.div.mngprod.Model.Product;
@@ -18,28 +20,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
+@RequestMapping("prodapi")
 public class ProductController {	
 	
 	@Autowired
 	ProductRepo prodRepo;
 	
-	@GetMapping(produces = {"application/json", "application/xml"})
-	@RequestMapping("products")
+	@GetMapping(value = "products", produces = {"application/json", "application/xml"})
 	public List<Product> getAllProducts() {
 		List<Product> products = prodRepo.findAll();
 		return products;
 	}
 	
-	@GetMapping(produces = {"application/json", "application/xml"})
-	@RequestMapping("product/{pid}")
+	@GetMapping(value = "product/{pid}", produces = {"application/json", "application/xml"})
 	public Product getProductFromPid(@PathVariable("pid") int pid) {
 		Product prod = prodRepo.findById(pid).get();
 		return prod;
 	}
 	
-	@PostMapping("product")
-	public void addProduct(@RequestBody Product prod) {
-		prodRepo.save(prod);
+	@PostMapping(value = "product")
+	public Product addProduct(@RequestBody Product prod) {
+		Product savedProd = prodRepo.save(prod);
+		return savedProd;
 	}
 	
+	@DeleteMapping(value = "product")
+	public void deleteProduct(@RequestParam("pid") int pid) {
+		prodRepo.deleteById(pid);
+	}	
 }
